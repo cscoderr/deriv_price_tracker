@@ -25,13 +25,25 @@ class PriceBloc extends Bloc<PriceEvent, PriceState> {
     GetPriceEvent event,
     Emitter<PriceState> emit,
   ) async {
-    emit(const PriceLoading());
-    await emit.forEach(
-      _trackerRepository.tick(event.symbol),
-      onData: PriceSuccess.new,
-      onError: (error, _) => PriceFailure(
-        error.toString(),
-      ),
-    );
+    try {
+      emit(const PriceLoading());
+      await emit.forEach(
+        _trackerRepository.tick(event.symbol),
+        onData: PriceSuccess.new,
+        onError: (error, _) {
+          print('error enter');
+          return PriceFailure(
+            error.toString(),
+          );
+        },
+      );
+    } catch (e) {
+      print('object');
+      emit(
+        PriceFailure(
+          e.toString(),
+        ),
+      );
+    }
   }
 }

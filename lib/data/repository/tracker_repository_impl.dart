@@ -48,13 +48,15 @@ class TrackerRepositoryImpl extends TrackerRepository {
     _trackerApi.getSymbols().listen(
       (dynamic data) {
         final resData = jsonDecode(data as String) as Map<String, dynamic>;
+        if (resData['error'] != null) {
+          throw Exception('Market close');
+        }
         final response = resData['active_symbols'] as List;
         final symbols = response
             .map((dynamic e) => SymbolModel.fromJson(e as Map<String, dynamic>))
             .toList();
         final marketSymbols = _getMarketSymbols(symbols, market);
         _symbolStreamController.add(marketSymbols);
-        _cache.set(symbolKey, symbols);
       },
       onError: (dynamic error) {
         print(error);
@@ -70,6 +72,9 @@ class TrackerRepositoryImpl extends TrackerRepository {
     _trackerApi.getSymbols().listen(
       (dynamic data) {
         final resData = jsonDecode(data as String) as Map<String, dynamic>;
+        if (resData['error'] != null) {
+          throw Exception('Market close');
+        }
         final response = resData['active_symbols'] as List;
         final symbols = response
             .map((dynamic e) => SymbolModel.fromJson(e as Map<String, dynamic>))
@@ -78,7 +83,6 @@ class TrackerRepositoryImpl extends TrackerRepository {
         _cache.set(symbolKey, symbols);
       },
       onError: (dynamic error) {
-        print(error);
         throw Exception(error);
       },
     );
@@ -89,17 +93,31 @@ class TrackerRepositoryImpl extends TrackerRepository {
   Stream<PriceModel> tick(String symbol) async* {
     _trackerApi.getPriceTicks(symbol).listen(
       (dynamic data) {
-        print(data);
         final response = jsonDecode(data as String) as Map<String, dynamic>;
+        if (response['error'] != null) {
+          _priceStreamController
+              .addError(response['error']['message'].toString());
+        }
         final price = PriceModel.fromJson(response);
         _priceStreamController.add(price);
         _priceCache.set(priceKey, price);
       },
       onError: (dynamic error) {
-        print(error);
-        throw Exception(error);
+        _priceStreamController.addError(error.toString());
       },
     );
     yield* _priceStreamController.stream;
+  }
+
+  @override
+  void close() {
+    _priceStreamController.close();
+    _symbolStreamController.close();
+    _trackerApi.close();
+  }
+
+  @override
+  void forget(String id) {
+    // TODO: implement forget
   }
 }

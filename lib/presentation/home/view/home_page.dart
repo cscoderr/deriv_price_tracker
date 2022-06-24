@@ -25,13 +25,15 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ],
-      child: const HomeView(),
+      child: HomeView(),
     );
   }
 }
 
 class HomeView extends StatelessWidget {
-  const HomeView({Key? key}) : super(key: key);
+  HomeView({Key? key}) : super(key: key);
+
+  double prevPrice = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +109,8 @@ class HomeView extends StatelessWidget {
               ),
               const SizedBox(height: 5),
               BlocBuilder<HomeBloc, HomeState>(
+                buildWhen: (previous, current) =>
+                    previous.status != current.status,
                 builder: (context, state) {
                   if (state.status == HomeStatus.loading) {
                     return const DerivDropdownBox(
@@ -119,12 +123,18 @@ class HomeView extends StatelessWidget {
                       ],
                     );
                   } else if (state.status == HomeStatus.failure) {
-                    return const DerivDropdownBox(
+                    return DerivDropdownBox(
                       value: '',
                       items: [
                         DropdownMenuItem<dynamic>(
                           value: '',
-                          child: Text('An error occur'),
+                          child: Text(
+                            'An error occur',
+                            style: GoogleFonts.ubuntu(
+                              color: const Color(0xFFFA2E3E),
+                              fontSize: 20,
+                            ),
+                          ),
                         ),
                       ],
                     );
@@ -161,23 +171,30 @@ class HomeView extends StatelessWidget {
               BlocBuilder<PriceBloc, PriceState>(
                 builder: (context, state) {
                   if (state is PriceSuccess) {
-                    final isBuying = (state.price.tick?.bid ?? 0) <
-                        (state.price.tick?.ask ?? 0);
-                    final isNeutral = (state.price.tick?.bid ?? 0) ==
-                        (state.price.tick?.ask ?? 0);
-                    final diff = (state.price.tick?.ask ?? 0) -
-                        (state.price.tick?.bid ?? 0);
+                    final price = state.price.tick?.quote ?? 0.0;
+                    final isNeutral = prevPrice == price;
+                    final hasDecrease = prevPrice > price;
+                    prevPrice = state.price.tick?.quote ?? 0.0;
                     return CurrentPriceCard(
-                      price: _formattedPrice(state.price.tick?.bid ?? 0.0),
+                      price: _formattedPrice(state.price.tick?.quote ?? 0.0),
                       position: isNeutral
                           ? CurrentPosition.neutral
-                          : isBuying
+                          : hasDecrease
                               ? CurrentPosition.low
                               : CurrentPosition.high,
-                      percentage: _formattedPrice(diff),
+                      ask: _formattedPrice(state.price.tick?.ask ?? 0),
+                      bid: _formattedPrice(state.price.tick?.bid ?? 0),
                     );
                   } else if (state is PriceFailure) {
-                    return Text(state.error);
+                    return Center(
+                      child: Text(
+                        state.error,
+                        style: GoogleFonts.ubuntu(
+                          color: const Color(0xFFFA2E3E),
+                          fontSize: 20,
+                        ),
+                      ),
+                    );
                   } else if (state is PriceInitial) {
                     return Container();
                   }

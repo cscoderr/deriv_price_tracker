@@ -6,4 +6,8 @@ abstract class TrackerRepository {
   Stream<List<SymbolModel>> marketSymbol(String market);
 
   Stream<PriceModel> tick(String symbol);
+
+  void forget(String id);
+
+  void close();
 }

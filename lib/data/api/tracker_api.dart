@@ -41,4 +41,23 @@ class TrackerApi {
     );
     yield* _channel!.stream;
   }
+
+  Stream<void> forget(String id) async* {
+    if (_channel != null) await _channel!.sink.close();
+    _channel = WebSocketChannel.connect(
+      Uri.parse(socketUrl),
+    );
+    _channel!.sink.add(
+      jsonEncode(
+        {
+          'forget': id,
+        },
+      ),
+    );
+    yield* _channel!.stream;
+  }
+
+  void close() {
+    _channel?.sink.close();
+  }
 }

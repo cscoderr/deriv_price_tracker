@@ -14,6 +14,7 @@ class Tick {
         bid: json['bid'] as double?,
         epoch: json['epoch'] as int?,
         id: json['id'] as String?,
+        quote: json['quote'] as double?,
         symbol: json['symbol'] as String?,
       );
   final double? ask;

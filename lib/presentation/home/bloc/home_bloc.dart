@@ -1,9 +1,10 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:price_tracker/domain/models/models.dart';
 import 'package:price_tracker/domain/repository/tracker_repository.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
@@ -19,7 +20,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<SymbolPriceEvent>(_onSymbolPriceChanged);
   }
 
-  WebSocketChannel? _channel;
   final TrackerRepository _trackerRepository;
 
   Future<void> _initial(
@@ -80,7 +80,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   @override
   Future<void> close() {
-    _channel?.sink.close();
+    _trackerRepository.close();
     return super.close();
   }
 }
