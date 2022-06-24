@@ -1,9 +1,24 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:price_tracker/presentation/home/home.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => HomeBloc()..add(ConnectedEvent()),
+      child: const HomeView(),
+    );
+  }
+}
+
+class HomeView extends StatelessWidget {
+  const HomeView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -56,41 +71,27 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 5),
               const DerivDropdownBox(),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      blurRadius: 24,
-                      offset: const Offset(0, 6),
-                    )
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Column(
-                      children: [
-                        const Text('Current Price'),
-                        Text(
-                          '10000',
-                          style: GoogleFonts.ubuntu(
-                            fontSize: 30,
-                            color: const Color(0xFFFA2E3E),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    const Icon(
-                      Icons.arrow_upward,
-                      color: Color(0xFFFA2E3E),
-                    ),
-                  ],
-                ),
+              BlocBuilder<HomeBloc, HomeState>(
+                builder: (context, state) {
+                  return StreamBuilder<dynamic>(
+                    stream: state.channel?.stream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        print(snapshot.data);
+                        final data = jsonDecode(snapshot.data as String)
+                            as Map<String, dynamic>;
+
+                        print(data);
+                        return const CurrentPriceCard(
+                          price: '10000',
+                        );
+                      }
+                      return const CurrentPriceCard(
+                        isLoading: true,
+                      );
+                    },
+                  );
+                },
               ),
               const SizedBox(height: 20),
             ],

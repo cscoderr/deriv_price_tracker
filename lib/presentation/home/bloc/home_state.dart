@@ -1,6 +1,19 @@
 part of 'home_bloc.dart';
 
-@immutable
-abstract class HomeState {}
+class HomeState extends Equatable {
+  const HomeState({
+    this.channel,
+  });
 
-class HomeInitial extends HomeState {}
+  HomeState copyWith({
+    WebSocketChannel? channel,
+  }) {
+    return HomeState(
+      channel: channel ?? this.channel,
+    );
+  }
+
+  final WebSocketChannel? channel;
+  @override
+  List<Object?> get props => [channel];
+}
