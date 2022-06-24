@@ -66,35 +66,19 @@ class HomeView extends StatelessWidget {
                     onChanged: (dynamic value) => context
                         .read<HomeBloc>()
                         .add(MarketChangeEvent(value.toString())),
-                    items: const [
-                      DropdownMenuItem<dynamic>(
+                    items: [
+                      const DropdownMenuItem<dynamic>(
                         value: '',
                         child: Text('Select Market'),
                       ),
-                      DropdownMenuItem<dynamic>(
-                        value: 'forex',
-                        child: Text('Forex'),
-                      ),
-                      DropdownMenuItem<dynamic>(
-                        value: 'synthetic_index',
-                        child: Text('Synthetic Indicies'),
-                      ),
-                      DropdownMenuItem<dynamic>(
-                        value: 'indices',
-                        child: Text('Stock & Indicies'),
-                      ),
-                      DropdownMenuItem<dynamic>(
-                        value: 'cryptocurrency',
-                        child: Text('Cryptocurrencies'),
-                      ),
-                      DropdownMenuItem<dynamic>(
-                        value: 'basket_index',
-                        child: Text('Basket Indicies'),
-                      ),
-                      DropdownMenuItem<dynamic>(
-                        value: 'commodities',
-                        child: Text('Commodities'),
-                      ),
+                      ...state.markets
+                          .map(
+                            (e) => DropdownMenuItem<dynamic>(
+                              value: e.key,
+                              child: Text(e.title!),
+                            ),
+                          )
+                          .toList()
                     ],
                   );
                 },

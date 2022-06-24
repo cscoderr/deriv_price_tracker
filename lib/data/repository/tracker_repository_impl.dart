@@ -30,7 +30,6 @@ class TrackerRepositoryImpl extends TrackerRepository {
 
   @override
   Stream<List<SymbolModel>> marketSymbol(String market) async* {
-    // final _streamController = StreamController<List<SymbolModel>>.broadcast();
     if (_cache.contains(symbolKey)) {
       final symbols = _cache.get(symbolKey)!;
       yield symbols;
@@ -48,9 +47,6 @@ class TrackerRepositoryImpl extends TrackerRepository {
     _trackerApi.getSymbols().listen(
       (dynamic data) {
         final resData = jsonDecode(data as String) as Map<String, dynamic>;
-        if (resData['error'] != null) {
-          throw Exception('Market close');
-        }
         final response = resData['active_symbols'] as List;
         final symbols = response
             .map((dynamic e) => SymbolModel.fromJson(e as Map<String, dynamic>))
@@ -72,9 +68,6 @@ class TrackerRepositoryImpl extends TrackerRepository {
     _trackerApi.getSymbols().listen(
       (dynamic data) {
         final resData = jsonDecode(data as String) as Map<String, dynamic>;
-        if (resData['error'] != null) {
-          throw Exception('Market close');
-        }
         final response = resData['active_symbols'] as List;
         final symbols = response
             .map((dynamic e) => SymbolModel.fromJson(e as Map<String, dynamic>))
@@ -97,10 +90,11 @@ class TrackerRepositoryImpl extends TrackerRepository {
         if (response['error'] != null) {
           _priceStreamController
               .addError(response['error']['message'].toString());
+        } else {
+          final price = PriceModel.fromJson(response);
+          _priceStreamController.add(price);
+          _priceCache.set(priceKey, price);
         }
-        final price = PriceModel.fromJson(response);
-        _priceStreamController.add(price);
-        _priceCache.set(priceKey, price);
       },
       onError: (dynamic error) {
         _priceStreamController.addError(error.toString());
@@ -117,7 +111,5 @@ class TrackerRepositoryImpl extends TrackerRepository {
   }
 
   @override
-  void forget(String id) {
-    // TODO: implement forget
-  }
+  void forget(String id) {}
 }

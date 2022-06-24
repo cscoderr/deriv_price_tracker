@@ -21,6 +21,14 @@ class HomeState extends Equatable {
     this.status = HomeStatus.initial,
     this.market = '',
     this.symbol = '',
+    this.markets = const [
+      MarketModel(key: 'forex', title: 'Forex'),
+      MarketModel(key: 'synthetic_index', title: 'Synthetic Indicies'),
+      MarketModel(key: 'indices', title: 'Stock & Indicies'),
+      MarketModel(key: 'cryptocurrency', title: 'Cryptocurrencies'),
+      MarketModel(key: 'basket_index', title: 'Basket Indicies'),
+      MarketModel(key: 'commodities', title: 'Commodities'),
+    ],
   });
 
   HomeState copyWith({
@@ -43,6 +51,7 @@ class HomeState extends Equatable {
   final PriceModel price;
   final HomeStatus status;
   final String market;
+  final List<MarketModel> markets;
   final String symbol;
 
   @override
