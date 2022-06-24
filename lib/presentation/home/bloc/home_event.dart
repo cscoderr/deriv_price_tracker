@@ -1,6 +1,27 @@
 part of 'home_bloc.dart';
 
 @immutable
-abstract class HomeEvent {}
+abstract class HomeEvent extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
 
-class ConnectedEvent extends HomeEvent {}
+class HomeInitialEvent extends HomeEvent {}
+
+class SymbolsEvent extends HomeEvent {
+  SymbolsEvent(this.market);
+
+  final String market;
+
+  @override
+  List<Object?> get props => [market];
+}
+
+class MarketChangeEvent extends HomeEvent {
+  MarketChangeEvent(this.value);
+
+  final String value;
+
+  @override
+  List<Object?> get props => [value];
+}

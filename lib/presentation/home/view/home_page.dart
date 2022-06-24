@@ -1,8 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:price_tracker/domain/repository/tracker_repository.dart';
 import 'package:price_tracker/presentation/home/home.dart';
 
 class HomePage extends StatelessWidget {
@@ -11,7 +11,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeBloc()..add(ConnectedEvent()),
+      create: (context) =>
+          HomeBloc(trackerRepository: context.read<TrackerRepository>())
+            ..add(HomeInitialEvent()),
       child: const HomeView(),
     );
   }
@@ -29,28 +31,13 @@ class HomeView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    text: 'Price',
-                    style: GoogleFonts.ubuntu(
-                      fontSize: 30,
-                      color: const Color(0xFFFA2E3E),
-                      fontWeight: FontWeight.w700,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Tracker',
-                        style: GoogleFonts.ubuntu(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              _title(),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: MediaQuery.of(context).size.height / 3,
+                child: SvgPicture.asset('assets/image.svg'),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
               Text(
                 'Available Market',
                 style: TextStyle(
@@ -59,7 +46,40 @@ class HomeView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 5),
-              const DerivDropdownBox(),
+              const DerivDropdownBox(
+                value: '',
+                onChanged: print,
+                items: [
+                  DropdownMenuItem<dynamic>(
+                    value: '',
+                    child: Text('Select Market'),
+                  ),
+                  DropdownMenuItem<dynamic>(
+                    value: 'forex',
+                    child: Text('Forex'),
+                  ),
+                  DropdownMenuItem<dynamic>(
+                    value: 'synthetic_index',
+                    child: Text('Synthetic Indicies'),
+                  ),
+                  DropdownMenuItem<dynamic>(
+                    value: 'indices',
+                    child: Text('Stock & Indicies'),
+                  ),
+                  DropdownMenuItem<dynamic>(
+                    value: 'cryptocurrency',
+                    child: Text('Cryptocurrencies'),
+                  ),
+                  DropdownMenuItem<dynamic>(
+                    value: 'basket_index',
+                    child: Text('Basket Indicies'),
+                  ),
+                  DropdownMenuItem<dynamic>(
+                    value: 'commodities',
+                    child: Text('Commodities'),
+                  ),
+                ],
+              ),
               const SizedBox(height: 40),
               Text(
                 'Symbols',
@@ -69,35 +89,50 @@ class HomeView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 5),
-              const DerivDropdownBox(),
+              const DerivDropdownBox(
+                value: '',
+                items: [
+                  DropdownMenuItem<dynamic>(
+                    value: '',
+                    child: Text('Select Symbols'),
+                  ),
+                ],
+              ),
               const Spacer(),
               BlocBuilder<HomeBloc, HomeState>(
                 builder: (context, state) {
-                  return StreamBuilder<dynamic>(
-                    stream: state.channel?.stream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        print(snapshot.data);
-                        final data = jsonDecode(snapshot.data as String)
-                            as Map<String, dynamic>;
-
-                        print(data);
-                        return const CurrentPriceCard(
-                          price: '10000',
-                        );
-                      }
-                      return const CurrentPriceCard(
-                        isLoading: true,
-                      );
-                    },
+                  return const CurrentPriceCard(
+                    price: '1000',
                   );
                 },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _title() => Center(
+        child: RichText(
+          text: TextSpan(
+            text: 'Deriv',
+            style: GoogleFonts.ubuntu(
+              fontSize: 30,
+              color: const Color(0xFFFA2E3E),
+              fontWeight: FontWeight.w700,
+            ),
+            children: [
+              TextSpan(
+                text: 'Tracker',
+                style: GoogleFonts.ubuntu(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
 }

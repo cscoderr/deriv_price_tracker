@@ -1,19 +1,34 @@
 part of 'home_bloc.dart';
 
+enum HomeStatus {
+  initial,
+  loading,
+  success,
+  failure,
+}
+
 class HomeState extends Equatable {
   const HomeState({
-    this.channel,
+    this.symbols = const [],
+    this.price = const PriceModel(),
+    this.status = HomeStatus.initial,
   });
 
   HomeState copyWith({
-    WebSocketChannel? channel,
+    List<SymbolModel>? symbols,
+    PriceModel? price,
+    HomeStatus? status,
   }) {
     return HomeState(
-      channel: channel ?? this.channel,
+      price: price ?? this.price,
+      symbols: symbols ?? this.symbols,
+      status: status ?? this.status,
     );
   }
 
-  final WebSocketChannel? channel;
+  final List<SymbolModel> symbols;
+  final PriceModel price;
+  final HomeStatus status;
   @override
-  List<Object?> get props => [channel];
+  List<Object?> get props => [price, symbols, status];
 }

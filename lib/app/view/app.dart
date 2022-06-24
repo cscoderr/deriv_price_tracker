@@ -6,13 +6,36 @@
 // https://opensource.org/licenses/MIT.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:price_tracker/domain/repository/tracker_repository.dart';
 import 'package:price_tracker/l10n/l10n.dart';
 import 'package:price_tracker/presentation/home/home.dart';
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  const App({
+    Key? key,
+    required this.trackerRepository,
+  }) : super(key: key);
+
+  final TrackerRepository trackerRepository;
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider.value(
+          value: trackerRepository,
+        )
+      ],
+      child: const _App(),
+    );
+  }
+}
+
+class _App extends StatelessWidget {
+  const _App({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

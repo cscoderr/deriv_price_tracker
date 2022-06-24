@@ -7,7 +7,12 @@
 
 import 'package:price_tracker/app/app.dart';
 import 'package:price_tracker/bootstrap.dart';
+import 'package:price_tracker/data/repository/tracker_repository_impl.dart';
 
 void main() {
-  bootstrap(() => const App());
+  bootstrap(
+    () => App(
+      trackerRepository: TrackerRepositoryImpl(),
+    ),
+  );
 }

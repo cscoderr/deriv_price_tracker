@@ -39,6 +39,7 @@ class CurrentPriceCard extends StatelessWidget {
           : Row(
               children: [
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text('Current Price'),
                     Text(

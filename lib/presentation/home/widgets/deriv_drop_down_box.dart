@@ -1,28 +1,24 @@
 import 'package:flutter/material.dart';
 
 class DerivDropdownBox extends StatelessWidget {
-  const DerivDropdownBox({Key? key}) : super(key: key);
+  const DerivDropdownBox({
+    Key? key,
+    required this.items,
+    required this.value,
+    this.onChanged,
+  }) : super(key: key);
+
+  final List<DropdownMenuItem> items;
+  final String value;
+  final ValueChanged<dynamic>? onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      value: '',
+    return DropdownButtonFormField<dynamic>(
+      value: value,
       isExpanded: true,
-      items: const [
-        DropdownMenuItem(
-          value: '',
-          child: Text('ETH'),
-        ),
-        DropdownMenuItem(
-          value: 'eth',
-          child: Text('ETH'),
-        ),
-        DropdownMenuItem(
-          value: 'btc',
-          child: Text('BTC'),
-        ),
-      ],
-      onChanged: (value) {},
+      items: items,
+      onChanged: onChanged,
       decoration: InputDecoration(
         fillColor: Colors.white,
         filled: true,
