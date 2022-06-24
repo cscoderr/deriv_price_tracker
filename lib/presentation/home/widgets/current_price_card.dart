@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+enum CurrentPosition {
+  low(Color(0xFFFA2E3E)),
+  high(Color(0xFF219653)),
+  neutral(Colors.grey);
+
+  const CurrentPosition(this.color);
+
+  final Color color;
+}
+
 class CurrentPriceCard extends StatelessWidget {
   const CurrentPriceCard({
     Key? key,
     this.price,
     this.isLoading = false,
+    this.percentage = '0',
+    this.position = CurrentPosition.neutral,
   }) : super(key: key);
 
   final String? price;
   final bool isLoading;
+  final CurrentPosition position;
+  final String percentage;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -46,16 +60,28 @@ class CurrentPriceCard extends StatelessWidget {
                       price ?? '',
                       style: GoogleFonts.ubuntu(
                         fontSize: 30,
-                        color: const Color(0xFFFA2E3E),
+                        color: position.color,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
                 ),
                 const Spacer(),
-                const Icon(
-                  Icons.arrow_upward,
-                  color: Color(0xFFFA2E3E),
+                Column(
+                  children: [
+                    Icon(
+                      Icons.arrow_upward,
+                      color: position.color,
+                    ),
+                    Text(
+                      '$percentage%',
+                      style: GoogleFonts.ubuntu(
+                        fontSize: 16,
+                        color: position.color,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

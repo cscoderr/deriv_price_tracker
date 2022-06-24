@@ -25,3 +25,21 @@ class MarketChangeEvent extends HomeEvent {
   @override
   List<Object?> get props => [value];
 }
+
+class MarketSymbolEvent extends HomeEvent {
+  MarketSymbolEvent(this.symbol);
+
+  final String symbol;
+
+  @override
+  List<Object?> get props => [symbol];
+}
+
+class SymbolPriceEvent extends HomeEvent {
+  SymbolPriceEvent(this.symbol);
+
+  final String symbol;
+
+  @override
+  List<Object?> get props => [symbol];
+}

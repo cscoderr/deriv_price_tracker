@@ -11,22 +11,29 @@ class TrackerRepositoryImpl extends TrackerRepository {
   TrackerRepositoryImpl({
     TrackerApi? trackerApi,
     Cache<String, List<SymbolModel>>? cache,
+    Cache<String, PriceModel>? priceCache,
   })  : _trackerApi = trackerApi ?? TrackerApi(),
+        _priceCache = priceCache ?? InAppMemory<String, PriceModel>(),
         _cache = cache ?? InAppMemory<String, List<SymbolModel>>();
 
   final TrackerApi _trackerApi;
   final Cache<String, List<SymbolModel>> _cache;
+  final Cache<String, PriceModel> _priceCache;
 
   @visibleForTesting
   final String symbolKey = '__symbol_key__';
+  final String priceKey = '__price_key__';
+
+  final _priceStreamController = StreamController<PriceModel>.broadcast();
+  final _symbolStreamController =
+      StreamController<List<SymbolModel>>.broadcast();
 
   @override
   Stream<List<SymbolModel>> marketSymbol(String market) async* {
-    final _streamController = StreamController<List<SymbolModel>>.broadcast();
+    // final _streamController = StreamController<List<SymbolModel>>.broadcast();
     if (_cache.contains(symbolKey)) {
-      final symbols = _cache.get(market)!;
-      _streamController.add(_getMarketSymbols(symbols, market));
-      yield* _streamController.stream;
+      final symbols = _cache.get(symbolKey)!;
+      yield symbols;
     }
     final symbols = symbolsWithMarket(market);
     yield* symbols;
@@ -38,7 +45,6 @@ class TrackerRepositoryImpl extends TrackerRepository {
   }
 
   Stream<List<SymbolModel>> symbolsWithMarket(String market) async* {
-    final _streamController = StreamController<List<SymbolModel>>.broadcast();
     _trackerApi.getSymbols().listen(
       (dynamic data) {
         final resData = jsonDecode(data as String) as Map<String, dynamic>;
@@ -47,7 +53,7 @@ class TrackerRepositoryImpl extends TrackerRepository {
             .map((dynamic e) => SymbolModel.fromJson(e as Map<String, dynamic>))
             .toList();
         final marketSymbols = _getMarketSymbols(symbols, market);
-        _streamController.add(marketSymbols);
+        _symbolStreamController.add(marketSymbols);
         _cache.set(symbolKey, symbols);
       },
       onError: (dynamic error) {
@@ -55,7 +61,7 @@ class TrackerRepositoryImpl extends TrackerRepository {
         throw Exception(error);
       },
     );
-    yield* _streamController.stream;
+    yield* _symbolStreamController.stream;
   }
 
   @override
@@ -80,8 +86,20 @@ class TrackerRepositoryImpl extends TrackerRepository {
   }
 
   @override
-  Future<List<PriceModel>> tick() {
-    // TODO: implement tick
-    throw UnimplementedError();
+  Stream<PriceModel> tick(String symbol) async* {
+    _trackerApi.getPriceTicks(symbol).listen(
+      (dynamic data) {
+        print(data);
+        final response = jsonDecode(data as String) as Map<String, dynamic>;
+        final price = PriceModel.fromJson(response);
+        _priceStreamController.add(price);
+        _priceCache.set(priceKey, price);
+      },
+      onError: (dynamic error) {
+        print(error);
+        throw Exception(error);
+      },
+    );
+    yield* _priceStreamController.stream;
   }
 }

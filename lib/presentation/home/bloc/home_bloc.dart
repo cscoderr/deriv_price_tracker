@@ -13,8 +13,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       : _trackerRepository = trackerRepository,
         super(const HomeState()) {
     on<HomeInitialEvent>(_initial);
-    on<SymbolsEvent>(_symbols);
+    on<SymbolsEvent>(_onGetSymbols);
     on<MarketChangeEvent>(_onMarketChanged);
+    on<MarketSymbolEvent>(_onSymbolChanged);
+    on<SymbolPriceEvent>(_onSymbolPriceChanged);
   }
 
   WebSocketChannel? _channel;
@@ -27,14 +29,39 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _trackerRepository.symbols();
   }
 
+  Future<void> _onSymbolChanged(
+    MarketSymbolEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        symbol: event.symbol,
+        status: HomeStatus.initial,
+      ),
+    );
+    add(SymbolPriceEvent(event.symbol));
+  }
+
+  Future<void> _onSymbolPriceChanged(
+    SymbolPriceEvent event,
+    Emitter<HomeState> emit,
+  ) async {}
+
   Future<void> _onMarketChanged(
     MarketChangeEvent event,
     Emitter<HomeState> emit,
   ) async {
+    emit(
+      state.copyWith(
+        market: event.value,
+        symbol: '',
+        status: HomeStatus.initial,
+      ),
+    );
     add(SymbolsEvent(event.value));
   }
 
-  Future<void> _symbols(
+  Future<void> _onGetSymbols(
     SymbolsEvent event,
     Emitter<HomeState> emit,
   ) async {

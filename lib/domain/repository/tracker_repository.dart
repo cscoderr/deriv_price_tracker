@@ -5,5 +5,5 @@ abstract class TrackerRepository {
 
   Stream<List<SymbolModel>> marketSymbol(String market);
 
-  Future<List<PriceModel>> tick();
+  Stream<PriceModel> tick(String symbol);
 }

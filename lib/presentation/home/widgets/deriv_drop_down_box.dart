@@ -5,21 +5,24 @@ class DerivDropdownBox extends StatelessWidget {
     Key? key,
     required this.items,
     required this.value,
+    this.isEnabled = true,
     this.onChanged,
   }) : super(key: key);
 
   final List<DropdownMenuItem> items;
   final String value;
   final ValueChanged<dynamic>? onChanged;
+  final bool isEnabled;
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<dynamic>(
       value: value,
-      isExpanded: true,
+      isExpanded: isEnabled,
       items: items,
-      onChanged: onChanged,
+      onChanged: isEnabled ? onChanged : null,
       decoration: InputDecoration(
+        enabled: isEnabled,
         fillColor: Colors.white,
         filled: true,
         hintStyle: TextStyle(

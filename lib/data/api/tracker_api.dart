@@ -26,7 +26,7 @@ class TrackerApi {
     yield* _channel!.stream;
   }
 
-  Stream<void> getPriceTicks() async* {
+  Stream<void> getPriceTicks(String symbol) async* {
     if (_channel != null) await _channel!.sink.close();
     _channel = WebSocketChannel.connect(
       Uri.parse(socketUrl),
@@ -34,7 +34,7 @@ class TrackerApi {
     _channel!.sink.add(
       jsonEncode(
         {
-          'ticks': 'R_50',
+          'ticks': symbol,
           'subscribe': 1,
         },
       ),
