@@ -8,17 +8,10 @@ abstract class PriceEvent extends Equatable {
 }
 
 class GetPriceEvent extends PriceEvent {
-  const GetPriceEvent(this.symbol);
+  const GetPriceEvent(this.symbol, this.prevPrice);
 
   final String symbol;
+  final double prevPrice;
   @override
-  List<Object> get props => [symbol];
-}
-
-class PriceChangedEvent extends PriceEvent {
-  const PriceChangedEvent(this.price);
-
-  final PriceModel price;
-  @override
-  List<Object> get props => [price];
+  List<Object> get props => [symbol, prevPrice];
 }

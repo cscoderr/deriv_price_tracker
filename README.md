@@ -18,3 +18,8 @@ $ flutter run --flavor production --target lib/main_production.dart
 ```
 
 \_\*Price Tracker works on iOS, Android
+
+## Screenshots
+
+<h4 align="center">
+<img src="screenshots/1.png" width="30%" vspace="10" hspace="10">

@@ -24,7 +24,9 @@ class PriceFailure extends PriceState {
 }
 
 class PriceSuccess extends PriceState {
-  const PriceSuccess(this.price);
+  const PriceSuccess(
+    this.price,
+  );
 
   final PriceModel price;
   @override

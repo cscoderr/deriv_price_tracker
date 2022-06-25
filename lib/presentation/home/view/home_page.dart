@@ -34,7 +34,6 @@ class HomeView extends StatelessWidget {
   HomeView({Key? key}) : super(key: key);
 
   double prevPrice = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,7 +131,7 @@ class HomeView extends StatelessWidget {
                           .add(MarketSymbolEvent(value.toString()));
                       context
                           .read<PriceBloc>()
-                          .add(GetPriceEvent(value.toString()));
+                          .add(GetPriceEvent(value.toString(), prevPrice));
                     },
                     items: [
                       const DropdownMenuItem<dynamic>(
@@ -157,13 +156,13 @@ class HomeView extends StatelessWidget {
                   if (state is PriceSuccess) {
                     final price = state.price.tick?.quote ?? 0.0;
                     final isNeutral = prevPrice == price;
-                    final hasDecrease = prevPrice > price;
+                    final isLow = prevPrice > price;
                     prevPrice = state.price.tick?.quote ?? 0.0;
                     return CurrentPriceCard(
                       price: _formattedPrice(state.price.tick?.quote ?? 0.0),
                       position: isNeutral
                           ? CurrentPosition.neutral
-                          : hasDecrease
+                          : isLow
                               ? CurrentPosition.low
                               : CurrentPosition.high,
                       ask: _formattedPrice(state.price.tick?.ask ?? 0),

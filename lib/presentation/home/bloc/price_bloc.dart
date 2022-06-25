@@ -10,16 +10,10 @@ class PriceBloc extends Bloc<PriceEvent, PriceState> {
   PriceBloc({required TrackerRepository trackerRepository})
       : _trackerRepository = trackerRepository,
         super(const PriceInitial()) {
-    on<PriceChangedEvent>(_onPriceChanged);
     on<GetPriceEvent>(_onGetPriceChanged);
   }
 
   final TrackerRepository _trackerRepository;
-
-  Future<void> _onPriceChanged(
-    PriceChangedEvent event,
-    Emitter<PriceState> emit,
-  ) async {}
 
   Future<void> _onGetPriceChanged(
     GetPriceEvent event,
